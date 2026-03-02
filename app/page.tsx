@@ -27,7 +27,7 @@ export default function DashboardPage() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Panel de Control</h1>
-          <p className="text-zinc-500 mt-1">Gestiona el vencimiento de los documentos de tu flota.</p>
+          <p className="text-zinc-500 mt-1">Gestiona el vencimiento de los documentos de tus vehículos.</p>
         </div>
 
         <div className="flex gap-3">
@@ -70,7 +70,7 @@ export default function DashboardPage() {
       <section className="pt-4 border-t border-zinc-900">
         <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/20 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left overflow-hidden relative">
           <div className="relative z-10">
-            <h3 className="text-xl font-bold text-white mb-2">Comienza a registrar tu flota</h3>
+            <h3 className="text-xl font-bold text-white mb-2">Comienza a registrar tus vehículos</h3>
             <p className="text-blue-200/70 max-w-md">
               Agrega tus vehículos y sus fechas de expedición. El sistema calculará automáticamente cuándo deben renovarse.
             </p>

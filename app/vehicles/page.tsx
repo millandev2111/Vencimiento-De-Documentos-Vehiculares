@@ -23,7 +23,7 @@ export default function VehiclesPage() {
         <div className="space-y-8 animate-slide-up">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight">Mi Flota</h1>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">Mis Vehículos</h1>
                     <p className="text-zinc-500 mt-1">Listado de vehículos registrados en el sistema.</p>
                 </div>
 
@@ -48,7 +48,7 @@ export default function VehiclesPage() {
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-20 gap-4">
                         <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
-                        <p className="text-zinc-500 font-medium">Cargando flota...</p>
+                        <p className="text-zinc-500 font-medium">Cargando vehículos...</p>
                     </div>
                 ) : (
                     <VehicleList vehicles={filteredVehicles} />
