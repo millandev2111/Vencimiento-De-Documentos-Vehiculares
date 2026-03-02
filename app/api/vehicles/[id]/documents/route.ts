@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { calculateExpiryDate } from '@/lib/utils';
 import type { CreateDocumentDto } from '@/types';
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     const { id } = await params;
-
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('documents')
-        .select(`*, document_type:document_types (*)`)
+        .select(`
+      *,
+      document_type:document_types (*)
+    `)
         .eq('vehicle_id', id)
         .order('expiry_date', { ascending: true });
 
@@ -17,13 +23,14 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
+    const { id: vehicleId } = await params;
     const body: CreateDocumentDto = await request.json();
 
     if (!body.document_type_id || !body.issue_date) {
         return NextResponse.json({ error: 'Faltan campos: document_type_id, issue_date' }, { status: 400 });
     }
 
+    const supabase = await createClient();
     // Fetch the document type to get duration
     const { data: docType, error: typeError } = await supabase
         .from('document_types')
@@ -41,7 +48,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { data, error } = await supabase
         .from('documents')
         .insert([{
-            vehicle_id: id,
+            vehicle_id: vehicleId,
             document_type_id: body.document_type_id,
             issue_date: body.issue_date,
             expiry_date: expiryDateStr,

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import type { CreateVehicleDto } from '@/types';
 
 export async function GET() {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('vehicles')
         .select(`
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Faltan campos requeridos: plate, brand, model, year' }, { status: 400 });
     }
 
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('vehicles')
         .insert([{

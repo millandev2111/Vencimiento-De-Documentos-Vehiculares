@@ -1,15 +1,41 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Car, Bell, BellOff } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, Car, Bell, BellOff, LogOut, User as UserIcon } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Button } from './ui/Button';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 export const Navbar = () => {
     const pathname = usePathname();
+    const router = useRouter();
     const { permission, requestPermission, expiringDocs } = useNotifications();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data } = await supabase.auth.getUser();
+            setUser(data.user);
+        };
+        getUser();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+        router.refresh();
+    };
+
+    if (pathname === '/login') return null;
 
     const navItems = [
         { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -39,8 +65,8 @@ export const Navbar = () => {
                                         key={item.name}
                                         href={item.href}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                                                ? 'text-blue-500 bg-blue-500/10'
-                                                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                                            ? 'text-blue-500 bg-blue-500/10'
+                                            : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
                                             }`}
                                     >
                                         <Icon className="h-4 w-4" />
@@ -75,7 +101,23 @@ export const Navbar = () => {
                             </Button>
                         )}
 
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 border border-zinc-700 shadow-inner" />
+                        <div className="flex items-center gap-3 pl-4 border-l border-zinc-800">
+                            <div className="hidden lg:block text-right">
+                                <p className="text-[10px] font-bold text-white leading-none truncate max-w-[120px]">
+                                    {user?.email?.split('@')[0]}
+                                </p>
+                                <p className="text-[9px] text-zinc-500 font-medium">Conectado</p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleSignOut}
+                                className="text-zinc-500 hover:text-red-400 !p-2"
+                                title="Cerrar Sesión"
+                            >
+                                <LogOut className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

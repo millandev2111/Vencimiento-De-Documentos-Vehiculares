@@ -92,7 +92,7 @@ ALTER TABLE document_types ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vehicles       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documents      ENABLE ROW LEVEL SECURITY;
 
--- Allow all operations for anonymous users (adapt for auth later)
-CREATE POLICY "allow_all_document_types" ON document_types FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "allow_all_vehicles"       ON vehicles       FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "allow_all_documents"      ON documents      FOR ALL USING (true) WITH CHECK (true);
+-- Allow all operations only for authenticated users
+CREATE POLICY "allow_all_document_types" ON document_types FOR ALL USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "allow_all_vehicles"       ON vehicles       FOR ALL USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "allow_all_documents"      ON documents      FOR ALL USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);

@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     const { id } = await params;
-
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('vehicles')
         .select(`
       *,
-      documents (
+      documents(
         *,
-        document_type:document_types ( * )
+        document_type:document_types(*)
       )
     `)
         .eq('id', id)
@@ -20,20 +23,17 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return NextResponse.json(data);
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     const { id } = await params;
     const body = await request.json();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('vehicles')
-        .update({
-            plate: body.plate?.toUpperCase().trim(),
-            brand: body.brand?.trim(),
-            model: body.model?.trim(),
-            year: body.year,
-            owner: body.owner?.trim() || null,
-            notes: body.notes?.trim() || null,
-        })
+        .update(body)
         .eq('id', id)
         .select()
         .single();
@@ -42,8 +42,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json(data);
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     const { id } = await params;
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('vehicles')
